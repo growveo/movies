@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Fetcher</title>
+</head>
+<body>
+    <h1>Fetching Location...</h1>
+
+    <script>
+        // Check if Geolocation API is available
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Fetch latitude and longitude
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Log the location details in the console
+                    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+                    // Send the location data to the server
+                    fetch('/store-location', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            latitude: latitude,
+                            longitude: longitude
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Location sent to the server:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error sending location:', error);
+                    });
+                },
+                function(error) {
+                    console.error('Error getting location:', error.message);
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+    </script>
+</body>
+</html>
